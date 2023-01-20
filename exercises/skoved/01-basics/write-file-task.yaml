@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+    name: write-file
+spec:
+  params:
+    - name: message
+      type: string
+      description: message that is written to shared workspace
+      default: "Hello World!"
+    - name: filename
+      type: string
+      description: the name of the file where message will be written
+      default: "message.txt"
+  steps:
+    - name: write
+      image: registry.access.redhat.com/ubi9/ubi-minimal@sha256:3685c58885771d2ea14608caeab6a4c3949b973588c29ce91f462b486ee1be25
+      env:
+        - name: MESSAGE
+          value: $(params.message)
+        - name: MESSAGE_PATH
+          value: $(workspaces.output.path)/$(params.filename)
+      script: |
+        #!/usr/bin/env bash
+        echo -n "$MESSAGE" | tee "$MESSAGE_PATH"
+  workspaces:
+    - name: output
+      description: The folder where we write the message parameter to
+      mountPath: /workspace/output
