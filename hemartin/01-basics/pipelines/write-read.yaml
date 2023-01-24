@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: write-read
+spec:
+  params:
+  - name: username
+    type: string
+  workspaces:
+    - name: pipeline-workspace
+  tasks:
+    - name: write
+      taskRef:
+        name: write
+      params:
+      - name: text
+        value: $(params.username)
+      workspaces:
+        - name: dest
+          workspace: pipeline-workspace
+    - name: read
+      taskRef:
+        name: read
+      workspaces:
+      - name: source
+        workspace: pipeline-workspace
+      runAfter:
+        - write
