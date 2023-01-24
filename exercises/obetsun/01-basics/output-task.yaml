@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: output-task
+spec:
+  params:
+    - name: greeting
+      type: string
+  workspaces:
+    - name: messages
+      description: place to store the message
+      mountPath: /messages
+  steps:
+    - name: emit-message
+      image: registry.access.redhat.com/ubi8-minimal@sha256:e7ac72a1704622c46ca2f21f6d2aac3770b9408fa3add45f9d37008dad8f24ec
+      script: |
+        #!/usr/bin/env bash
+        echo $(params.greeting) > $(workspaces.messages.path)/message 
+
+
+    
+
+

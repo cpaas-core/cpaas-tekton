@@ -1,0 +1,19 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: output-pipeline-run
+spec:
+  pipelineRef:
+    name: output-pipeline
+  params:
+    - name: greeting
+      value: "Hello World!"
+  workspaces:
+    - name: output-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Mi
