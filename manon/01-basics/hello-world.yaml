@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: hello
+  annotations:
+    tekton.dev/pipelines.minVersion: "1.0"
+spec:
+  params:
+  - name: username
+    type: string
+  workspaces:
+  - name: task-ws
+  steps:
+    - name: echo
+      image: quay.io/libpod/alpine@sha256:fa93b01658e3a5a1686dc3ae55f170d8de487006fb53a28efcd12ab0710a2e5f
+      env:
+        - name: USERNAME
+          value: $(params.username)
+      script: |
+        #!/bin/sh
+        echo "Hello World"
+        echo "$USERNAME" > $(workspaces.task-ws.path)/username
+

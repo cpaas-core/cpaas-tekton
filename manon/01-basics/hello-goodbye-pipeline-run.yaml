@@ -1,0 +1,20 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: hello-goodbye-run
+spec:
+  pipelineRef:
+    name: hello-goodbye
+  params:
+    - name: username
+      value: "Tekton"
+  workspaces:
+    - name: ws
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
+  

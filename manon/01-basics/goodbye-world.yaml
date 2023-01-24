@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: goodbye
+  annotations:
+    tekton.dev/pipelines.minVersion: "1.0"
+spec:
+  steps:
+    - name: goodbye
+      image: quay.io/libpod/ubuntu@sha256:c95a8e48bf88e9849f3e0f723d9f49fa12c5a00cfc6e60d2bc99d87555295e4c
+      env:
+        - name: USERNAME_PATH
+          value: $(workspaces.task-ws.path)/username
+      script: |
+        #!/bin/bash
+        echo "Goodbye " $(cat $USERNAME_PATH)
+  workspaces:
+    - name: task-ws
