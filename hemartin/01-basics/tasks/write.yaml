@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: write
+spec:
+  params:
+    - name: text
+      type: string
+  workspaces:
+    - name: dest
+      description: destination folder where to write
+      mountPath: /write
+  steps:
+    - name: write
+      image: registry.access.redhat.com/ubi9/ubi-minimal@sha256:3685c58885771d2ea14608caeab6a4c3949b973588c29ce91f462b486ee1be25
+      env:
+      - name: TEXT
+        value: $(params.text)
+      - name: TEXT_PATH
+        value: $(workspaces.dest.path)/text
+      script: |
+        #!/bin/sh
+        echo "Hello ${TEXT}" | tee ${TEXT_PATH}
