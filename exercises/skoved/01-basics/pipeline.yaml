@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: read-write-pipeline
+spec:
+  workspaces:
+    - name: shared-workspace
+  params:
+    - name: message
+      type: string
+      description: A string that will be written and read from a file
+  tasks:
+    - name: write-file
+      taskRef:
+        name: write-file
+      params:
+        - name: message
+          value: $(params.message)
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+    - name: read-file
+      taskRef:
+        name: read-file
+      workspaces:
+        - name: input
+          workspace: shared-workspace
+      runAfter:
+        - write-file
