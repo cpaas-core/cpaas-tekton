@@ -1,0 +1,30 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: hello-goodbye
+  labels:
+    app.kubernetes.io/version: "1.0"
+spec:
+  params:
+    - name: username
+      type: string
+  workspaces:
+    - name: ws
+  tasks:
+    - name: hello
+      taskRef:
+        name: hello
+      workspaces:
+        - name: task-ws
+          workspace: ws
+      params:
+        - name: username
+          value: $(params.username)
+    - name: goodbye
+      runAfter:
+        - hello
+      taskRef:
+        name: goodbye
+      workspaces:
+        - name: task-ws
+          workspace: ws
