@@ -1,0 +1,20 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: output-string
+spec:
+  
+  steps:
+    - name: output-string
+      image: registry.access.redhat.com/ubi9@sha256:4227a4b5013999a412196237c62e40d778d09cdc751720a66ff3701fbe5a4a9d
+      env:
+        - name: FILE_PATH
+          value: $(workspaces.shared-workspace.path)/input-file.txt
+      script: |
+        #!/usr/bin/env bash
+        cat ${FILE_PATH}
+      
+  workspaces:
+    - name: shared-workspace
+      description: common workspace for the tasks
+      mountPath: /01-basics/workspace

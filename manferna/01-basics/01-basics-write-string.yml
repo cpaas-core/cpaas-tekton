@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: write-string
+spec:
+  params:
+    - name: input-string
+      type: string
+      description: string that will be store in the shared workspace
+      default: "Hola Hello Hi!"
+    - name: file
+      type: string
+      description: the of the file
+      default: "input-file.txt"
+  workspaces:
+    - name: shared-workspace
+      description: common workspace for the tasks
+      mountPath: /01-basics/workspace
+  steps:
+    - name: write-string
+      image: registry.access.redhat.com/ubi9@sha256:4227a4b5013999a412196237c62e40d778d09cdc751720a66ff3701fbe5a4a9d
+      env:
+        - name: INPUT_STRING
+          value: $(params.input-string)
+        - name: FILE_PATH
+          value: $(workspaces.shared-workspace.path)/$(params.file)
+      script: |
+        #!/usr/bin/env bash
+        echo "${INPUT_STRING}" > ${FILE_PATH}
