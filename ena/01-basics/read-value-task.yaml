@@ -1,0 +1,13 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: read-value
+spec:
+  steps:
+    - name: read
+      image: alpine
+      command: ["/bin/sh"]
+      args: ["-c", "cat $(workspaces.shared.path)/value"]
+  workspaces:
+    - name: shared
+      readOnly: true

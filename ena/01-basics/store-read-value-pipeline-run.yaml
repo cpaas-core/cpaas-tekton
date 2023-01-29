@@ -1,0 +1,16 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: store-read-value-pipeline-run
+spec:
+  pipelineRef:
+    name: store-read-value
+  workspaces:
+    - name: pipeline-ws1
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Mi
