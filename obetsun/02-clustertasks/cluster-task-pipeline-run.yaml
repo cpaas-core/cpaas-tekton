@@ -1,0 +1,26 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+   name: cluster-task-pipeline-run
+spec:
+  pipelineRef:
+    resolver: cluster
+    params:
+      - name: kind
+        value: pipeline
+      - name: name
+        value: cluster-task-pipeline
+      - name: namespace
+        value: default
+  params:
+    - name: message
+      value: "So long and thanks for all the fish"
+  workspaces:
+    - name: from-beyond
+      volumeClaimTemplate:
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 1Mi

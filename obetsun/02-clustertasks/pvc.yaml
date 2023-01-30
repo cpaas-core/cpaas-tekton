@@ -1,0 +1,11 @@
+apiVersion: tekton.dev/v1beta1
+kind: PersistentVolumeClaim
+metadata:
+  name: from-beyond
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 1Gi
