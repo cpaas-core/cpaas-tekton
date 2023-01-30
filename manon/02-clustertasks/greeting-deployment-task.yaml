@@ -1,0 +1,30 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: deploy-with-kubectl
+  annotations:
+    tekton.dev/pipelines.minVersion: "1.0"
+spec:
+  workspaces:
+    - name: source
+  params:
+    - name: image-url
+      type: string
+    - name: image-tag
+      type: string
+      default: latest
+  steps:
+    - name: update-yaml
+      image: alpine # TODO modify
+      command: ["sed"]
+      args:
+      - -i
+      - -e
+      - s;__IMAGE__;$(params.image-url):$(params.image-tag);g
+    - name: run-kubectl
+      image: lachlanevenson/k8s-kubectl # TODO modify
+      command: ["kubectl"]
+      args:
+      - apply
+      - -f
+      - $(workspaces.source.path)

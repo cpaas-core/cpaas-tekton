@@ -1,0 +1,70 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: greeting-pipeline
+  labels:
+    app.kubernetes.io/version: "1.0"
+spec:
+  workspaces:
+    - name: git-repo
+    - name: k8s-repo
+  params:
+    - name: git-url
+      type: string
+      default: https://github.com/redhat-scholars/tekton-tutorial-greeter
+    - name: image
+      type: string
+      default: quay.io/manon/tekton-greeting
+    - name: image-tag
+      type: string
+      default: latest
+    - name: k8s-depl-git-url
+      type: string
+      default: https://martaaruiz93/cpaas-tekton.git
+    - name: k8s-depl-git-subpath
+      type: string
+      default: manon/02-clustertasks/k8s/
+  tasks:
+    - name: git-clone
+      taskRef:
+        resolver: cluster
+      params:
+        - name: url
+          value: $(params.git-url)
+      workspaces:
+        - name: output
+          workspace: git-repo
+    - name: s2i-java
+      taskRef:
+        resolver: cluster
+      params:
+        - name: IMAGE
+          value: $(params.image)
+        - name: VERSION
+          value: $(params.image-tag)
+      workspaces:
+        - name: source
+          workspace: git-repo
+    - name: git-clone
+      taskRef:
+        resolver: cluster
+      params:
+        - name: url
+          value: $(params.k8s-depl-git-url)
+        - name: subdirectory
+          value: $(params.k8s-depl-git-subdir)
+      workspaces:
+        - name: output
+          workspace: k8s-repo
+    - name: greeting-deployment
+      taskRef:
+        name: greeting-deployment
+      params:
+        - name: image-url
+          value: $(params.image)
+        - name: image-tag
+          value: $(params.image-tag)
+      workspaces:
+        - name: source
+          workspace: k8s-repo
+
