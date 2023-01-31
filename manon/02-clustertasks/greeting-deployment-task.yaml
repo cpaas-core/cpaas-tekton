@@ -1,12 +1,10 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: deploy-with-kubectl
+  name: greeting-deployment
   annotations:
     tekton.dev/pipelines.minVersion: "1.0"
 spec:
-  workspaces:
-    - name: source
   params:
     - name: image-url
       type: string
@@ -14,17 +12,25 @@ spec:
       type: string
       default: latest
   steps:
-    - name: update-yaml
-      image: alpine # TODO modify
-      command: ["sed"]
+    - name: create-new-app
+      image: registry.redhat.io/openshift3/ose-cli@sha256:04e40e6669a472250301260034e96d2bd4dace5679686433c551744898b29801
+      env:
+        - name: IMAGE
+          value: $(params.image-url):$(params.image-tag)
+      command: ["oc"]
       args:
-      - -i
-      - -e
-      - s;__IMAGE__;$(params.image-url):$(params.image-tag);g
-    - name: run-kubectl
-      image: lachlanevenson/k8s-kubectl # TODO modify
-      command: ["kubectl"]
+      - create
+      - new-app
+      - $IMAGE
+      - --name=greeting-tekton
+      - -l 'app=greeting-tekton' 
+    - name: create-route
+      command: ["oc"]
+      image: registry.redhat.io/openshift3/ose-cli@sha256:04e40e6669a472250301260034e96d2bd4dace5679686433c551744898b29801
       args:
-      - apply
-      - -f
-      - $(workspaces.source.path)
+      - create
+      - route
+      - edge
+      - greeting-tekton
+      - --service=greeting-tekton
+      

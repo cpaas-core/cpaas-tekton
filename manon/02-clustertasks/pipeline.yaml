@@ -7,27 +7,21 @@ metadata:
 spec:
   workspaces:
     - name: git-repo
-    - name: k8s-repo
   params:
     - name: git-url
       type: string
       default: https://github.com/redhat-scholars/tekton-tutorial-greeter
     - name: image
       type: string
-      default: quay.io/manon/tekton-greeting
+      default: image-registry.openshift-image-registry.svc:5000/dev-tekton/greeting-tekton
     - name: image-tag
       type: string
       default: latest
-    - name: k8s-depl-git-url
-      type: string
-      default: https://martaaruiz93/cpaas-tekton.git
-    - name: k8s-depl-git-subpath
-      type: string
-      default: manon/02-clustertasks/k8s/
   tasks:
-    - name: git-clone
+    - name: clone-greeting-repo
       taskRef:
-        resolver: cluster
+        kind: ClusterTask
+        name: git-clone
       params:
         - name: url
           value: $(params.git-url)
@@ -36,35 +30,24 @@ spec:
           workspace: git-repo
     - name: s2i-java
       taskRef:
-        resolver: cluster
+        kind: ClusterTask
+        name: s2i-java
+      runAfter: 
+        - clone-greeting-repo
       params:
         - name: IMAGE
           value: $(params.image)
-        - name: VERSION
-          value: $(params.image-tag)
       workspaces:
         - name: source
           workspace: git-repo
-    - name: git-clone
-      taskRef:
-        resolver: cluster
-      params:
-        - name: url
-          value: $(params.k8s-depl-git-url)
-        - name: subdirectory
-          value: $(params.k8s-depl-git-subdir)
-      workspaces:
-        - name: output
-          workspace: k8s-repo
     - name: greeting-deployment
       taskRef:
         name: greeting-deployment
+      runAfter:
+        - s2i-java
       params:
         - name: image-url
           value: $(params.image)
         - name: image-tag
           value: $(params.image-tag)
-      workspaces:
-        - name: source
-          workspace: k8s-repo
 
