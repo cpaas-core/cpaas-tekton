@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: greeting-pipeline
+  name: deploy-java-app
   labels:
     app.kubernetes.io/version: "1.0"
 spec:
@@ -11,14 +11,17 @@ spec:
     - name: git-url
       type: string
       default: https://github.com/redhat-scholars/tekton-tutorial-greeter
-    - name: image
+    - name: image-path
       type: string
-      default: image-registry.openshift-image-registry.svc:5000/dev-tekton/greeting-tekton
+      default: image-registry.openshift-image-registry.svc:5000/dev-tekton/
+    - name: app-name
+      type: string
+      default: greeting-tekton
     - name: image-tag
       type: string
       default: latest
   tasks:
-    - name: clone-greeting-repo
+    - name: clone-java-app
       taskRef:
         kind: ClusterTask
         name: git-clone
@@ -33,21 +36,46 @@ spec:
         kind: ClusterTask
         name: s2i-java
       runAfter: 
-        - clone-greeting-repo
+        - clone-java-app
       params:
         - name: IMAGE
-          value: $(params.image)
+          value: $(params.image-path)$(params.app-name)
       workspaces:
         - name: source
           workspace: git-repo
-    - name: greeting-deployment
+    - name: oc-delete-old-app
       taskRef:
-        name: greeting-deployment
+        kind: ClusterTask
+        name: openshift-client
       runAfter:
         - s2i-java
       params:
-        - name: image-url
-          value: $(params.image)
-        - name: image-tag
-          value: $(params.image-tag)
+        - name: SCRIPT
+          value: |
+            #!/bin/sh
+            oc delete all -l 'app=$(params.app-name)'
+    - name: oc-deployment
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client
+      runAfter:
+        - oc-delete-old-app
+      params:
+        - name: SCRIPT
+          value: |
+            #!/bin/sh
+            oc new-app $(params.image-path)$(params.app-name):$(params.image-tag) -l 'app=$(params.app-name)'
+    - name: oc-create-route
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client
+      runAfter:
+        - oc-deployment
+      params:
+        - name: SCRIPT
+          value: |
+            #!/bin/sh
+            oc create route edge $(params.app-name) --service=$(params.app-name)
+ 
+      
 
