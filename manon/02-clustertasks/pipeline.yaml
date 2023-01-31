@@ -10,13 +10,13 @@ spec:
   params:
     - name: git-url
       type: string
-      default: https://github.com/redhat-scholars/tekton-tutorial-greeter
+      default: https://github.com/BuntyRaghani/spring-boot-hello-world
     - name: image-path
       type: string
       default: image-registry.openshift-image-registry.svc:5000/dev-tekton/
     - name: app-name
       type: string
-      default: greeting-tekton
+      default: hello-world
     - name: image-tag
       type: string
       default: latest
@@ -77,5 +77,3 @@ spec:
             #!/bin/sh
             oc create route edge $(params.app-name) --service=$(params.app-name)
  
-      
-
