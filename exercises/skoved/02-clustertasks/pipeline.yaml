@@ -1,0 +1,61 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-image-pipeline
+spec:
+  workspaces:
+    - name: shared-workspace
+  params:
+    - name: git-url
+      type: string
+      description: url of a git repository
+    - name: git-revision
+      type: string
+      description: revision to be used from the git repo
+      default: main
+    - name: dockerfile-path
+      type: string
+      description: path to the dockerfile in the git repo
+      default: ./Dockerfile
+    - name: docker-context-path
+      type: string
+      description: path to the directory to use as context for the image build
+      default: .
+    - name: image-name
+      type: string
+      description: name of the image (will be used to push the image)
+  tasks:
+    - name: clone-repo
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+        - name: revision
+          value: $(params.git-revision)
+        - name: sslVerify
+          value: "false"
+    - name: build-image
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: IMAGE
+          value: $(params.image-name)
+        - name: DOCKERFILE
+          value: $(params.dockerfile-path)
+        - name: CONTEXT
+          value: $(params.docker-context-path)
+      runAfter:
+        - clone-repo

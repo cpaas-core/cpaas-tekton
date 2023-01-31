@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: build-image-pipeline-run-
+spec:
+  pipelineRef:
+    name: build-image-pipeline
+  params:
+    - name: git-url
+      value: https://gitlab.cee.redhat.com/rhprod/rhprod-cli.git
+    - name: git-revision
+      value: main
+    - name: image-name
+      value: quay.io/cpaas/rhprod-executor:skoved-tekton-test
+  workspaces:
+    - name: shared-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 25Gi
