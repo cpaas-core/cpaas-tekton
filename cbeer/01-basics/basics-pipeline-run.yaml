@@ -4,7 +4,7 @@ metadata:
   name: basics-pipeline-run
 spec:
   workspaces:
-    - name: 01-basics-workspace
+    - name: basics-pipeline-workspace
       volumeClaimTemplate:
         spec:
           accessModes:

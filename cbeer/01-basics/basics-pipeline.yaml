@@ -6,15 +6,23 @@ spec:
   params:
   - name: input
     type: string
+  workspaces:
+    - name: basics-pipeline-workspace
   tasks:
     - name: write-to-workspace
       taskRef:
         name: write-to-workspace
+      workspaces:
+        - name: 01-basics-workspace
+          workspace: basics-pipeline-workspace
       params:
         - name: input
           value: $(params.input)
     - name: read-from-workspace
-      runAfter:
-        - write-to-workspace
       taskRef:
         name: read-from-workspace
+      workspaces:
+        - name: 01-basics-workspace
+          workspace: basics-pipeline-workspace
+      runAfter:
+        - write-to-workspace
