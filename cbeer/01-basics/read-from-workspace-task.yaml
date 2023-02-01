@@ -18,7 +18,7 @@ spec:
           value: $(workspaces.01-basics-workspace.bound)
       script: |
         #!/bin/sh
-        if [ "${IS_BOUND}" == "true"] ; then
+        if [[ "${IS_BOUND}" == "true" ]] ; then
           echo "Displaying text in filename ${FILE_NAME}"
           cat ${FILE_NAME}
         else

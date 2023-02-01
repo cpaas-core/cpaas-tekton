@@ -23,7 +23,7 @@ spec:
           value: $(workspaces.01-basics-workspace.bound)
       script: |
         #!/bin/bash
-        if [ "${IS_BOUND}" == "true"] ; then
+        if [[ "${IS_BOUND}" == "true" ]] ; then
           echo "Welcome to the Wonderful World of Disney, ${INPUT}" | tee ${FILE_NAME}
         else
           echo "Workspace is not bound"
