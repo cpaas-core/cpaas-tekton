@@ -1,0 +1,25 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: deploy-nationalparks
+spec:
+  pipelineRef:
+    name: deploy-java-app
+  params:
+    - name: git-url
+      value: https://github.com/openshift-roadshow/nationalparks.git
+    - name: app-name
+      value: nationalparks
+    - name: maven-args
+      value: clean package
+    - name: java-version
+      value: openjdk-11-el7
+  workspaces:
+    - name: git-repo
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Mi

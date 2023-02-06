@@ -26,6 +26,9 @@ spec:
     - name: maven-env-vars
       type: array
       default: []
+    - name: java-version
+      type: string
+      default: latest
   tasks:
     - name: clone-java-app
       taskRef:
@@ -47,7 +50,7 @@ spec:
         - name: IMAGE
           value: $(params.image-path)$(params.app-name)
         - name: VERSION
-          value: latest
+          value: $(params.java-version)
         - name: TLSVERIFY
           value: "false"
         - name: MAVEN_ARGS_APPEND
