@@ -1,0 +1,31 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: deploy-tekton-greeter
+spec:
+  pipelineRef:
+    name: deploy-java-app
+  params:
+    - name: git-url
+      value: https://github.com/redhat-scholars/tekton-tutorial-greeter.git
+    - name: app-name
+      value: tekton-greeter
+    - name: maven-args
+      value: clean package -pl quarkus
+    - name: maven-env-vars
+      value: 
+        - MAVEN_S2I_ARTIFACT_DIRS=quarkus/target/quarkus-app
+        - S2I_SOURCE_DEPLOYMENTS_FILTER=app lib quarkus quarkus-run.jar
+        - JAVA_OPTIONS=-Dquarkus.http.host=0.0.0.0
+        - AB_JOLOKIA_OFF=true
+        - JAVA_APP_JAR=/deployments/quarkus-run.jar
+  workspaces:
+    - name: git-repo
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Mi
+ 

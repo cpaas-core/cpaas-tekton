@@ -20,6 +20,12 @@ spec:
     - name: image-tag
       type: string
       default: latest
+    - name: maven-args
+      type: string
+      default: ""
+    - name: maven-env-vars
+      type: array
+      default: []
   tasks:
     - name: clone-java-app
       taskRef:
@@ -44,6 +50,10 @@ spec:
           value: latest
         - name: TLSVERIFY
           value: "false"
+        - name: MAVEN_ARGS_APPEND
+          value: $(params.maven-args) 
+        - name: ENV_VARS
+          value: $(params.maven-env-vars[*])
       workspaces:
         - name: source
           workspace: git-repo
