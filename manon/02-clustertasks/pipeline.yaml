@@ -13,7 +13,7 @@ spec:
       default: https://github.com/BuntyRaghani/spring-boot-hello-world
     - name: image-path
       type: string
-      default: image-registry.openshift-image-registry.svc:5000/dev-tekton/
+      default: image-registry.openshift-image-registry.svc:5000/<namespace>/
     - name: app-name
       type: string
       default: hello-world
@@ -40,6 +40,10 @@ spec:
       params:
         - name: IMAGE
           value: $(params.image-path)$(params.app-name)
+        - name: VERSION
+          value: latest
+        - name: TLSVERIFY
+          value: "false"
       workspaces:
         - name: source
           workspace: git-repo
