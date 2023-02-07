@@ -1,0 +1,37 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: ex2-pipeline
+  namespace: ex2
+spec:
+  workspaces:
+    - name: ex2-workspace
+  params:
+    - name: message
+      type: string
+      description: Some string to be processed
+      default: "hello world"
+
+  tasks:
+    - name: write-to-file
+      taskRef:
+        name: write-to-file
+        kind: ClusterTask
+      workspaces:
+        - name: ex2-workspace
+      params:
+        - name: message
+          value: "$(params.message)"
+        - name: path
+          value: "log/messages"
+      
+    - name: read-from-file
+      taskRef:
+        name: read-from-file
+      workspaces:
+        - name: ex2-workspace
+      params:
+        - name: path
+          value: "log/messages"
+      runAfter:
+        - write-to-file

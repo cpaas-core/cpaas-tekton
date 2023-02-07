@@ -1,0 +1,32 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: read-from-file
+  annotations:
+    description: |
+      A simple task that reads a given file content
+  namespace: ex2
+      
+spec:
+  params:
+    - name: path
+      type: string
+      description: >
+        Relative path to the file to be read.
+
+  workspaces:
+    - name: ex2-workspace
+      description: Workspace containing the file.
+      
+  steps:
+    - name: read-file
+      image: registry.access.redhat.com/ubi9/ubi-minimal@sha256:3685c58885771d2ea14608caeab6a4c3949b973588c29ce91f462b486ee1be25
+      workingDir: $(workspaces.ex1-workspace.path)
+      env:
+        - name: PARAM_PATH
+          value: $(params.path)
+      timeout: 60s
+      script: |
+        #!/usr/bin/env bash
+        cat "${PARAM_PATH}"
+        
