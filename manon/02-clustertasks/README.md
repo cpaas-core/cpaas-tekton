@@ -12,11 +12,25 @@
 2. Update `<namespace>` of `pipeline.yaml` with the name of the project that you ar using
 3. Create tekton resources from files
 
-```
-oc create -f manon/02-clustertasks/
-```
+`oc apply -f manon/02-clustertasks/pipeline/`
 
-4. Access the UI and run the created pipeline with a `volumeClaimTemplate` for the workspace (expand the advance options to use 1 MB instead of the default 1 GB)
+4. Access UI to see the 3 JAVA apps deployed
+
+## Using other container registries
+
+Example with `quay.io` and `podman`
+
+- Login to quay.io with podman
+
+`podman login quay.io`
+
+- Create a secret with the auth file
+
+`oc create secret generic regcred --from-file=.dockerconfigjson=${XDG_RUNTIME_DIR}/containers/auth.json --type=kubernetes.io/dockerconfigjson`
+
+- Link the secret with the pipeline sa
+
+`oc secrets link pipeline regcred`
 
 ## Clustertask used
 
@@ -26,5 +40,5 @@ oc create -f manon/02-clustertasks/
 
 ## Notes
 
-- Unable to push the image to an external repo (e.g. quay.io). See [this issue](https://github.com/tektoncd/operator/issues/1105)
 - Not used resolvers
+
