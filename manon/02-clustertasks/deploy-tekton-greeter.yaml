@@ -2,6 +2,7 @@ apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
   name: deploy-tekton-greeter
+  generateName: deploy-tekton-greeter-
 spec:
   pipelineRef:
     name: deploy-java-app

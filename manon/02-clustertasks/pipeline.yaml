@@ -2,33 +2,43 @@ apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: deploy-java-app
+  annotations:
+    description: Build and (re)deploy a JAVA application with a default route that allows access to it
   labels:
     app.kubernetes.io/version: "1.0"
 spec:
   workspaces:
     - name: git-repo
+      description: Path of the git repository
   params:
     - name: git-url
       type: string
       default: https://github.com/BuntyRaghani/spring-boot-hello-world
+      description: Git Repository URL of the JAVA Application
     - name: image-path
       type: string
       default: image-registry.openshift-image-registry.svc:5000/<namespace>/
+      description: URL of the image registry. Default to internal OC container registry.
     - name: app-name
       type: string
       default: hello-world
+      description: Name of the application
     - name: image-tag
       type: string
       default: latest
+      description: Tag of the image to be pushed
     - name: maven-args
       type: string
       default: ""
+      description: Maven args for the build
     - name: maven-env-vars
       type: array
       default: []
+      description: Maven Environment Variables for the build
     - name: java-version
       type: string
       default: latest
+      description: Java version for the build
   tasks:
     - name: clone-java-app
       taskRef:
@@ -64,8 +74,6 @@ spec:
       taskRef:
         kind: ClusterTask
         name: openshift-client
-      runAfter:
-        - s2i-java
       params:
         - name: SCRIPT
           value: |
@@ -76,6 +84,7 @@ spec:
         kind: ClusterTask
         name: openshift-client
       runAfter:
+        - s2i-java
         - oc-delete-old-app
       params:
         - name: SCRIPT

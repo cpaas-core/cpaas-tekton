@@ -2,6 +2,7 @@ apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
   name: deploy-nationalparks
+  generateName: deploy-nationalparks-
 spec:
   pipelineRef:
     name: deploy-java-app
