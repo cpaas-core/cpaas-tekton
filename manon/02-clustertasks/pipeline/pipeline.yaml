@@ -17,7 +17,7 @@ spec:
       description: Git Repository URL of the JAVA Application
     - name: image-path
       type: string
-      default: image-registry.openshift-image-registry.svc:5000/dev-tekton/
+      default: image-registry.openshift-image-registry.svc:5000/<namespace>/
       description: URL of the image registry. Default to internal OC container registry.
     - name: app-name
       type: string
