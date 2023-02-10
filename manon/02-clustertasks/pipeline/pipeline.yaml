@@ -1,0 +1,105 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: deploy-java-app
+  annotations:
+    description: Build and (re)deploy a JAVA application with a default route that allows access to it
+  labels:
+    app.kubernetes.io/version: "1.0"
+spec:
+  workspaces:
+    - name: git-repo
+      description: Path of the git repository
+  params:
+    - name: git-url
+      type: string
+      default: https://github.com/BuntyRaghani/spring-boot-hello-world
+      description: Git Repository URL of the JAVA Application
+    - name: image-path
+      type: string
+      default: image-registry.openshift-image-registry.svc:5000/<namespace>/
+      description: URL of the image registry. Default to internal OC container registry.
+    - name: app-name
+      type: string
+      default: hello-world
+      description: Name of the application
+    - name: image-tag
+      type: string
+      default: latest
+      description: Tag of the image to be pushed
+    - name: maven-args
+      type: string
+      default: ""
+      description: Maven args for the build
+    - name: maven-env-vars
+      type: array
+      default: []
+      description: Maven Environment Variables for the build
+    - name: java-version
+      type: string
+      default: latest
+      description: Java version for the build
+  tasks:
+    - name: clone-java-app
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      params:
+        - name: url
+          value: $(params.git-url)
+      workspaces:
+        - name: output
+          workspace: git-repo
+    - name: s2i-java
+      taskRef:
+        kind: ClusterTask
+        name: s2i-java
+      runAfter: 
+        - clone-java-app
+      params:
+        - name: IMAGE
+          value: $(params.image-path)$(params.app-name)
+        - name: VERSION
+          value: $(params.java-version)
+        - name: TLSVERIFY
+          value: "false"
+        - name: MAVEN_ARGS_APPEND
+          value: $(params.maven-args) 
+        - name: ENV_VARS
+          value: $(params.maven-env-vars[*])
+      workspaces:
+        - name: source
+          workspace: git-repo
+    - name: oc-delete-old-app
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client
+      params:
+        - name: SCRIPT
+          value: |
+            #!/bin/sh
+            oc delete all -l 'app=$(params.app-name)'
+    - name: oc-deployment
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client
+      runAfter:
+        - s2i-java
+        - oc-delete-old-app
+      params:
+        - name: SCRIPT
+          value: |
+            #!/bin/sh
+            oc new-app $(params.image-path)$(params.app-name):$(params.image-tag) -l 'app=$(params.app-name)'
+    - name: oc-create-route
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client
+      runAfter:
+        - oc-deployment
+      params:
+        - name: SCRIPT
+          value: |
+            #!/bin/sh
+            oc create route edge $(params.app-name) --service=$(params.app-name)
+ 

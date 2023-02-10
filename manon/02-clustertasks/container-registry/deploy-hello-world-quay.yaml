@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: deploy-hello-world-quay
+  generateName: deploy-hello-world-quay-
+spec:
+  taskRunSpecs:
+    - pipelineTaskName: s2i-java
+      taskServiceAccountName: pipeline
+  pipelineRef:
+    name: deploy-java-app
+  params:
+    - name: image-path
+      value: quay.io/manonru/
+  workspaces:
+    - name: git-repo
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Mi
