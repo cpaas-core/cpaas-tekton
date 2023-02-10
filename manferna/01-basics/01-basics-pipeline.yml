@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: 01-basics-pipeline
+spec:
+  workspaces:
+  - name: pipeline-shared-workspace
+  params:
+  - name: input-string
+    type: string
+    description: string used as input
+  tasks:
+  - name: write-string
+    taskRef:
+      name: write-string
+    params:
+      - name: input-string
+        value: $(params.input-string)
+    workspaces:
+    - name: shared-workspace
+      workspace: pipeline-shared-workspace
+  - name: output-string
+    taskRef:
+      name: output-string
+    workspaces:
+    - name: shared-workspace
+      workspace: pipeline-shared-workspace
+    runAfter:
+    - write-string
