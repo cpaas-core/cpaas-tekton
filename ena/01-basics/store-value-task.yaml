@@ -1,0 +1,12 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: store-value
+spec:
+  steps:
+    - name: echo
+      image: alpine
+      command: ["/bin/sh"]
+      args: ["-c", "echo TheValue > $(workspaces.shared.path)/value"]
+  workspaces:
+    - name: shared

@@ -1,0 +1,22 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: store-read-value
+spec:
+  workspaces:
+    - name: pipeline-ws1
+  tasks:
+    - name: store-value
+      taskRef:
+        name: store-value
+      workspaces:
+        - name: shared
+          workspace: pipeline-ws1
+    - name: read-value
+      taskRef:
+        name: read-value
+      workspaces:
+        - name: shared
+          workspace: pipeline-ws1
+      runAfter:
+        - store-value
