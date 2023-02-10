@@ -1,0 +1,21 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: ex-1-run-pipeline
+spec:
+  pipelineRef:
+    name: ex-1-pipeline
+
+  params:
+    - name: message
+      value: "Once upon a time in Hollywood"
+
+  workspaces:
+    - name: ex1-workspace # this workspace name must be declared in the Pipeline
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce # access mode may affect how you can use this volume in parallel tasks
+          resources:
+            requests:
+              storage: 10Mi
