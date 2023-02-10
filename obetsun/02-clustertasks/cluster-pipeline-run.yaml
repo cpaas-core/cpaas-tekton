@@ -1,0 +1,33 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: cluster-pipeline-run-
+spec:
+  pipelineRef:
+    name: cluster-pipeline
+  params:
+    - name: git-url
+      value: https://github.com/olegbet/quarkus.git
+    - name: gitRevision
+      value: 'main'
+    - name: mavenRepoVolume
+      value: 'maven-repo'
+    - name: contextDir
+      value: 'quarkus/getting-started'
+  workspaces:
+    - name: obetsun-dev-shared
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+             storage: 1Gi
+    - name: maven-settings
+      emptyDir: {}
+  podTemplate:
+    volumes:
+      - name: maven-repo
+        persistentVolumeClaim:
+          claimName: maven-repo
+  serviceAccountName: git-serviceaccount
