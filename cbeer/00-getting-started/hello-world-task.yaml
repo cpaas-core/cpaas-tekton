@@ -1,0 +1,11 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: hello
+spec:
+  steps:
+    - name: echo
+      image: registry.access.redhat.com/ubi7@sha256:1b0435b92d91ef9388fc91616c05c09c2d1071f80104cf0a8f05d62e8ac47c5a
+      script: |
+        #!/bin/sh
+        echo "Welcome to the Wonderful World of Disney"

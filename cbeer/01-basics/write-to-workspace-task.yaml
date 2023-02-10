@@ -1,0 +1,30 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: write-to-workspace
+spec:
+  params:
+    - name: input
+      type: string
+  workspaces:
+    - name: 01-basics-workspace
+      description: A folder storing a string created with the input parameter
+      optional: true
+      mountPath: /tmp/01-basics-workspace
+  steps:
+    - name: write-to-workspace
+      image: registry.access.redhat.com/ubi7@sha256:1b0435b92d91ef9388fc91616c05c09c2d1071f80104cf0a8f05d62e8ac47c5a
+      env:
+        - name: INPUT
+          value: $(params.input)
+        - name: FILE_NAME
+          value: $(workspaces.01-basics-workspace.path)/welcome.txt
+        - name: IS_BOUND
+          value: $(workspaces.01-basics-workspace.bound)
+      script: |
+        #!/bin/bash
+        if [[ "${IS_BOUND}" == "true" ]] ; then
+          echo "Welcome to the Wonderful World of Disney, ${INPUT}" | tee ${FILE_NAME}
+        else
+          echo "Workspace is not bound"
+        fi

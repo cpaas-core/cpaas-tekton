@@ -1,0 +1,19 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: basics-pipeline-run
+spec:
+  workspaces:
+    - name: basics-pipeline-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Mi
+  pipelineRef:
+    name: basics-pipeline
+  params:
+    - name: input
+      value: "BeerParty"

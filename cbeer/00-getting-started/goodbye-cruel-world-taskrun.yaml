@@ -1,0 +1,10 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: goodbye-task-run
+spec:
+  taskRef:
+    name: goodbye
+  params:
+    - name: username
+      value: "BeerParty"

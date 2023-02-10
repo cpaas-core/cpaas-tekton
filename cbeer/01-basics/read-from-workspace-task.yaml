@@ -1,0 +1,26 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: read-from-workspace
+spec:
+  workspaces:
+    - name: 01-basics-workspace
+      description: A folder containing a string created by an earlier task
+      optional: true
+      mountPath: /tmp/01-basics-workspace
+  steps:
+    - name: read-from-workspace
+      image: registry.access.redhat.com/ubi7@sha256:1b0435b92d91ef9388fc91616c05c09c2d1071f80104cf0a8f05d62e8ac47c5a
+      env:
+        - name: FILE_NAME
+          value: $(workspaces.01-basics-workspace.path)/welcome.txt
+        - name: IS_BOUND
+          value: $(workspaces.01-basics-workspace.bound)
+      script: |
+        #!/bin/sh
+        if [[ "${IS_BOUND}" == "true" ]] ; then
+          echo "Displaying text in filename ${FILE_NAME}"
+          cat ${FILE_NAME}
+        else
+          echo "Workspace is not bound"
+        fi
