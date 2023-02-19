@@ -1,0 +1,14 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: second-task
+spec:
+  workspaces:
+    - name: string-write-read-ws
+      readOnly: true
+  steps:
+    - name: read-string
+      image: registry.redhat.io/ubi8-minimal:latest
+      script: |
+        #!/bin/bash
+        cat /workspace/string-write-read-ws/some-string.txt

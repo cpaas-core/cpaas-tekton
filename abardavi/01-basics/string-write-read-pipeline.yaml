@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: write-read-string-pipeline
+spec:
+  params:
+    - name: some_string
+      type: string
+  workspaces:
+    - name: string-write-read-ws
+  tasks:
+    - name: first-task
+      taskRef:
+        name: first-task
+      params:
+        - name: some_string
+          value: $(params.some_string)
+      workspaces:
+        - name: string-write-read-ws
+          workspace: string-write-read-ws
+    - name: second-task
+      runAfter:
+        - first-task
+      taskRef:
+        name: second-task
+      workspaces:
+        - name: string-write-read-ws
+          workspace: string-write-read-ws

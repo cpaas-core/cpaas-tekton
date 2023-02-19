@@ -1,0 +1,20 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: write-read-string-pipeline-run
+  generateName: write-read-string-pipeline-run-
+spec:
+  pipelineRef:
+    name: write-read-string-pipeline
+  workspaces:
+    - name: string-write-read-ws
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Mi
+  params:
+  - name: some_string
+    value: "aBcDeFg123"
