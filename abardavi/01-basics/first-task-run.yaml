@@ -1,0 +1,20 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: first-task-run
+  generateName: first-task-run-
+spec:
+  taskRef:
+    name: first-task
+  workspaces:
+    - name: string-write-read-ws
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Mi
+  params:
+    - name: some_string
+      value: "asdfzxcv"

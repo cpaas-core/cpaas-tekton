@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: first-task
+spec:
+  params:
+    - name: some_string
+      type: string
+  workspaces:
+    - name: string-write-read-ws
+      readOnly: false
+  steps:
+    - name: write-string
+      image: registry.redhat.io/ubi8-minimal:latest
+      script: |
+        #!/bin/bash
+        echo "$(params.some_string)!" > /workspace/string-write-read-ws/some-string.txt

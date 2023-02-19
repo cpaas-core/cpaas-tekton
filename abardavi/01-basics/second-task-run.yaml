@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: second-task-run
+  generateName: second-task-run-
+spec:
+  taskRef:
+    name: second-task
+  workspaces:
+    - name: string-write-read-ws
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Mi
