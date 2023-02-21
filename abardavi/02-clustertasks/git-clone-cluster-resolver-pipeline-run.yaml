@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: git-clone-cluster-resolver-pipeline-run
+  generateName: git-clone-cluster-resolver-pipeline-run-
+spec:
+  pipelineRef:
+    name: git-clone-cluster-resolver-pipeline
+    resolver: git-clone
+    params:
+      - name: url
+        value: https://gitlab.cee.redhat.com/abardavi/mr-test.git
+      - name: sslVerify
+        value: "false"
+      - name: subdirectory
+        value: "mr-test"
+    workspaces:
+      - name: output
+        workspace: mr-test-ws
+  workspaces:
+    - name: mr-test-ws
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Mi
