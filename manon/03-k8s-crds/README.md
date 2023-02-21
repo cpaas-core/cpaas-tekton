@@ -19,11 +19,11 @@ The logic of managing the custom resources.
 ### Framework Types
 
 - _Static_ templated operators, e.g:
-	- HELM 
+	- Operator Framwork with HELM
 	- KUDO
 - Dynamic (more code than the previous one), e.g:
 	- Java Operator Framework
-	- Operator Framework (compatible with HELM and kubebuilder)
+	- Operator Framework with go
 	- kubebuilder 
 
 Here is the [list of Frameworks](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/#writing-operator) available
@@ -41,9 +41,6 @@ Medium:
 RH Developer:
 - [about Java Operator Framework](https://developers.redhat.com/articles/2022/02/15/write-kubernetes-java-java-operator-sdk#)
 
-RH Openshift:
-- [Java based operators](https://docs.openshift.com/container-platform/4.11//operators/operator_sdk/java/osdk-java-tutorial.html)
-
 ## Useful exercises
 
 -  Tutorial of kubebuilder
@@ -51,9 +48,10 @@ RH Openshift:
 	- [ ] [CronJob](https://kubebuilder.io/cronjob-tutorial/cronjob-tutorial.html) in [Github](https://github.com/kubernetes-sigs/kubebuilder/tree/master/docs/book/src/cronjob-tutorial/testdata/project)
 - Tutorial of Java Operator Framework
 	- [ ] [UserIdentity](https://levelup.gitconnected.com/first-try-on-java-operator-sdk-5a07f30771de#539f) in [Github]()
+	- [ ] [Memcached](https://docs.openshift.com/container-platform/4.11//operators/operator_sdk/java/osdk-java-tutorial.html) for Openshift
 - Tutorial of Operator SDK
-	- [ ] [MemCached](https://sdk.operatorframework.io/docs/building-operators/golang/tutorial/) with go in [Github](https://github.com/operator-framework/operator-sdk/tree/master/testdata)
- - KUDO
+	- [ ] [MemCached](https://sdk.operatorframework.io/docs/building-operators/golang/tutorial/) with go in [Github](https://github.com/operator-framework/operator-sdk/tree/master/testdata) - Also in [Openshift docs](https://docs.openshift.com/container-platform/4.9/operators/operator_sdk/golang/osdk-golang-tutorial.html)
+ - Tutorial of KUDO
 	- [ ] [4 kudo tutorials](https://github.com/realmbgl/kudo-tutorial#develop-kudo-operators)
  
 ## Sample Operator implementations
