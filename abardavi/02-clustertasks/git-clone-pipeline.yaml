@@ -1,0 +1,30 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: git-clone-pipeline
+spec:
+  workspaces:
+    - name: mr-test-ws
+  tasks:
+    - name: clone-mr-test
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      params:
+        - name: url
+          value: https://gitlab.cee.redhat.com/abardavi/mr-test.git
+        - name: sslVerify
+          value: "false"
+        - name: subdirectory
+          value: "mr-test"
+      workspaces:
+        - name: output
+          workspace: mr-test-ws
+    - name: check-file-content
+      runAfter:
+        - clone-mr-test
+      taskRef:
+        name: check-file-content
+      workspaces:
+        - name: mr-test-ws
+          workspace: mr-test-ws
