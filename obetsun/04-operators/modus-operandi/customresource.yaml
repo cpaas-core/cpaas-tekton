@@ -1,9 +1,0 @@
-apiVersion: instana.com/v1alpha1
-kind: Demo
-metadata:
-  name: hello-world
-spec:
-  demo.properties:
-  - A
-  - B
-  - C
