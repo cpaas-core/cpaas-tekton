@@ -1,0 +1,6 @@
+apiVersion: "halkyon.io/v1alpha1"
+kind: ExposedApp
+metadata:
+  name: application
+spec:
+  imageRef: quay.io/obetsun/operator-test:1
