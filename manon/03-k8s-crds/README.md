@@ -20,7 +20,7 @@ The logic of managing the custom resources.
 
 - _Static_ templated operators, e.g:
 	- [Operator Framwork with HELM](https://sdk.operatorframework.io/docs/building-operators/helm/quickstart/)
-	- [KUDO](https://kudo.dev/docs/)
+	- [KUDO](https://kudo.dev/docs/) - Abandoned
 - Dynamic (more code than the previous one), e.g:
 	- [Java Operator Framework](https://github.com/java-operator-sdk/java-operator-sdk)
 	- [Operator Framework with go](https://sdk.operatorframework.io/docs/building-operators/golang/)
@@ -53,8 +53,6 @@ RH:
 	- [ ] [Memcached](https://docs.openshift.com/container-platform/4.11//operators/operator_sdk/java/osdk-java-tutorial.html) for Openshift
 - Tutorial of Operator SDK
 	- [ ] [MemCached](https://sdk.operatorframework.io/docs/building-operators/golang/tutorial/) with go in [Github](https://github.com/operator-framework/operator-sdk/tree/master/testdata) - Also in [Openshift docs](https://docs.openshift.com/container-platform/4.9/operators/operator_sdk/golang/osdk-golang-tutorial.html)
- - Tutorial of KUDO
-	- [ ] [4 kudo tutorials](https://github.com/realmbgl/kudo-tutorial#develop-kudo-operators)
  - Tutorial of KOPS
 	- [ ] [EphemeralVolumeClaim](https://kopf.readthedocs.io/en/stable/walkthrough/problem/) in [Github](https://github.com/nolar/ephemeral-volume-claims)
  

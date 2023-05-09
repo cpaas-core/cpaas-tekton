@@ -1,0 +1,7 @@
+apiVersion: triggers.tekton.manon/v1
+kind: CronPipelineJob
+metadata:
+  name: my-cpj
+spec:
+  cronSpec: "5 0 * * *"
+  pipelineRunRef: my-pipeline-run
