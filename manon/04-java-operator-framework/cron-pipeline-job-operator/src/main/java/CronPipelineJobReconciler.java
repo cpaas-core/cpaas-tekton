@@ -3,6 +3,7 @@ import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
 import com.redhat.operator.customresource.CronPipelineJob;
+import com.redhat.operator.customresource.CronPipelineJobStatus;
 import io.fabric8.tekton.client.TektonClient;
 import io.fabric8.tekton.pipeline.v1beta1.PipelineRun;
 import io.javaoperatorsdk.operator.api.reconciler.*;
@@ -14,6 +15,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static com.cronutils.model.CronType.UNIX;
 
@@ -32,11 +34,15 @@ public class CronPipelineJobReconciler
             CronPipelineJob cronPipelineJob, Context<CronPipelineJob> context) throws Exception {
 
         // Check if is suspended
-        if (cronPipelineJob.getStatus().isSuspend() || cronPipelineJob.getStatus().isActive()){
+        CronPipelineJobStatus cronPipelineJobStatus = cronPipelineJob.getStatus();
+        if (cronPipelineJobStatus == null){
+            cronPipelineJobStatus = new CronPipelineJobStatus();
+        }
+        if (cronPipelineJobStatus.isSuspend() || cronPipelineJobStatus.isActive()){
             return UpdateControl.noUpdate();
         }
 
-        String pipelineRunName = cronPipelineJob.getSpec().getPipelineRun();
+        String pipelineRunName = cronPipelineJob.getSpec().getPipelineRunRef();
 
         // Retrieve pipelineRun
         PipelineRun pipelineRun = this.client.v1beta1()
@@ -52,9 +58,10 @@ public class CronPipelineJobReconciler
         }
 
         // Check last execution and crontab
-        ZonedDateTime lastScheduled = ZonedDateTime.ofInstant(
-                cronPipelineJob.getStatus().getLastScheduled().toInstant(),
-                ZoneId.systemDefault());
+        ZonedDateTime lastScheduled = null;
+        if (cronPipelineJobStatus.getLastScheduled() != null){
+            lastScheduled = ZonedDateTime.parse(cronPipelineJobStatus.getLastScheduled());
+        }
         String cronSpec = cronPipelineJob.getSpec().getCronSpec();
 
         // TODO - Make compatible with other cron formats (QUARTZ, CRON4J, SPRING and SPRING53)
@@ -65,30 +72,34 @@ public class CronPipelineJobReconciler
         ExecutionTime executionTime = ExecutionTime.forCron(parsedUnixCronExpression);
         ZonedDateTime expectedPreviousExecutionTime = executionTime.lastExecution(now).get();
 
-        if (expectedPreviousExecutionTime.isBefore(lastScheduled)) {
+        if (lastScheduled != null && expectedPreviousExecutionTime.isBefore(lastScheduled)) {
             log.debug("Expected previous execution {} already executed at {}",
                     expectedPreviousExecutionTime, lastScheduled);
             return UpdateControl.noUpdate();
         }
 
         // Create a new pipelineRun
-        cronPipelineJob.getStatus().setActive(true);
+        cronPipelineJobStatus.setActive(true);
+        cronPipelineJob.setStatus(cronPipelineJobStatus);
         UpdateControl uc = UpdateControl.patchStatus(cronPipelineJob);
 
-        String generateName = cronPipelineJob.getMetadata().getGenerateName();
+        String generateName = pipelineRun.getMetadata().getGenerateName();
         if (generateName == null){
-            generateName = cronPipelineJob.getMetadata().getName();
+            generateName = pipelineRun.getMetadata().getName();
         }
         UUID uuid = UUID.randomUUID();
         pipelineRun.getMetadata().setName(generateName + uuid.toString());
+        pipelineRun.getMetadata().setUid(uuid.toString());
         this.client.v1beta1().pipelineRuns().inNamespace(cronPipelineJob.getMetadata().getNamespace())
                 .createOrReplace(pipelineRun);
 
-        cronPipelineJob.getStatus().setActive(false);
-        cronPipelineJob.getStatus().setLastScheduled(new Date());
+        cronPipelineJobStatus.setActive(false);
+        cronPipelineJobStatus.setLastScheduled(ZonedDateTime.now().toString());
+        cronPipelineJob.setStatus(cronPipelineJobStatus);
 
         // TODO - Add reschedule
-        return UpdateControl.patchStatus(cronPipelineJob);
+        return UpdateControl.patchStatus(cronPipelineJob).rescheduleAfter(
+                executionTime.timeToNextExecution(now).get().getSeconds(), TimeUnit.SECONDS);
     }
 
 }

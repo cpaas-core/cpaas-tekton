@@ -25,11 +25,11 @@ public class CronPipelineJobSpec {
         this.cronSpec = cronSpec;
     }
 
-    public String getPipelineRun(){
+    public String getPipelineRunRef(){
         return this.pipelineRunRef;
     }
 
-    public void setPipelineRun(String pipelineRun){
+    public void setPipelineRunReg(String pipelineRun){
         this.pipelineRunRef = pipelineRun;
     }
 }

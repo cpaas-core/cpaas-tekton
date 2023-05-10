@@ -28,7 +28,7 @@ spec:
       serviceAccountName: cron-pipeline-job-operator
       containers:
         - name: operator
-          image: image-registry.openshift-image-registry.svc:5000/cron-pipeline-job-operator/josdk-cpj-operator:latest
+          image: image-registry.openshift-image-registry.svc:5000/cron-pipeline-job-operator/josdk-cpj-operator:latest@sha256:03777672ff54965e3fdc36d3273a594a6912de9dfd64035e89ed1a945088abbf
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
@@ -53,7 +53,7 @@ metadata:
   name: cron-pipeline-job-operator
 rules:
   - apiGroups:
-      - ""
+      - "tekton.dev"
     resources:
       - pipelineruns
     verbs:

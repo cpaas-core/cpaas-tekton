@@ -14,7 +14,7 @@ public class CronPipelineJobStatus {
     private boolean suspend = false;
 
     @PrinterColumn(name="Last Scheduled")
-    private Date lastScheduled;
+    private String lastScheduled;
 
     public boolean isActive(){
         return this.isActive;
@@ -32,11 +32,11 @@ public class CronPipelineJobStatus {
         this.suspend = suspend;
     }
 
-    public Date getLastScheduled() {
+    public String getLastScheduled() {
         return this.lastScheduled;
     }
 
-    public void setLastScheduled(Date lastScheduled) {
+    public void setLastScheduled(String lastScheduled) {
         this.lastScheduled = lastScheduled;
     }
 }

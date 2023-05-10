@@ -22,7 +22,7 @@ spec:
   tasks:
     - name: hello
       taskRef:
-        name: hello
+        name: hello-world
 ---
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
