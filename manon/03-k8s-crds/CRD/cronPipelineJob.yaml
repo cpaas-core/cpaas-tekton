@@ -1,0 +1,64 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: cronpipelinejobs.triggers.tekton.manon
+  namespace: dev-tekton
+spec:
+  group: triggers.tekton.manon
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                cronSpec:
+                  type: string
+                  description: The cron spec defining the interval a PipelineRun is run
+                  pattern: '^(\d+|\*)(/\d+)?(\s+(\d+|\*)(/\d+)?){4}$'
+                pipelineRunRef:
+                  description: The name of the PipelineRun that is going to be priodically
+                  type: string
+            status:
+              type: object
+              properties:
+                active:
+                  type: boolean
+                suspend:
+                  type: boolean
+                lastScheduled:
+                  format: duration
+                  type: string
+      additionalPrinterColumns:
+      - name: Cron
+        type: string
+        description: The cron spec defining the interval a PipelineRun is run
+        jsonPath: .spec.cronSpec
+      - name: PipelineRun
+        type: string
+        description: The name of the PipelineRun that is going to be priodically executed
+        jsonPath: .spec.pipelineRunRef
+      - name: Suspend
+        type: boolean
+        jsonPath: .status.suspend
+      - name: Last Scheduled
+        type: date
+        jsonPath: .status.lastScheduled
+      - name: Age
+        type: date
+        jsonPath: .metadata.creationTimestamp
+  scope: Namespaced
+  names:
+    plural: cronpipelinejobs
+    singular: cronpipelinejob
+    kind: CronPipelineJob
+    shortNames:
+    - cpj
+    categories:
+    - all
+    - tekton
+    - tekton-triggers

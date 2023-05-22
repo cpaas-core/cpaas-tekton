@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cron-pipeline-job-operator
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cron-pipeline-job-operator
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cron-pipeline-job-operator
+spec:
+  selector:
+    matchLabels:
+      app: cron-pipeline-job-operator
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: cron-pipeline-job-operator
+    spec:
+      serviceAccountName: cron-pipeline-job-operator
+      containers:
+        - name: operator
+          image: image-registry.openshift-image-registry.svc:5000/cron-pipeline-job-operator/josdk-cpj-operator:latest@sha256:03777672ff54965e3fdc36d3273a594a6912de9dfd64035e89ed1a945088abbf
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: operator-admin
+subjects:
+  - kind: ServiceAccount
+    name: cron-pipeline-job-operator
+    namespace: cron-pipeline-job-operator
+roleRef:
+  kind: ClusterRole
+  name: cron-pipeline-job-operator
+  apiGroup: ""
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cron-pipeline-job-operator
+rules:
+  - apiGroups:
+      - "tekton.dev"
+    resources:
+      - pipelineruns
+    verbs:
+      - "*"
+  - apiGroups:
+      - "apiextensions.k8s.io"
+    resources:
+      - customresourcedefinitions
+    verbs:
+      - "*"
+  - apiGroups:
+      - "triggers.tekton.manon"
+    resources:
+      - cronpipelinejobs
+      - cronpipelinejobs/status
+    verbs:
+      - "*"
