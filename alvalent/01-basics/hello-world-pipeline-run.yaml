@@ -1,0 +1,36 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: 01-basics-pipeline-run
+spec:
+  params:
+    - name: input-string
+      type: string
+      value: "Hello World!"
+  workspaces:
+    - name: task-ws
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Mi
+  tasks:
+    - name: task1-run
+      taskRef:
+        name: task1
+      workspaces:
+        - name: 01-basics-workspace
+          workspace: task-ws
+      params:
+        - name: input
+          value: $(params.input-string)
+    - name: task2-run
+      taskRef:
+        name: task2
+      workspaces:
+        - name: 01-basics-workspace
+          workspace: task-ws
+      runAfter:
+        - task1
