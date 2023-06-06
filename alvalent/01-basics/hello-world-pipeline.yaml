@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: 01-basics-pipeline
+spec:
+  params:
+    - name: input-string
+      type: string
+  workspaces:
+    - name: task-ws
+  tasks:
+    - name: task1
+      taskRef:
+        name: task1
+      workspaces:
+        - name: task-ws
+          workspace: task-ws
+      params:
+        - name: input-string
+          value: $(params.input-string)
+
+    - name: task2
+      taskRef:
+        name: task2
+      workspaces:
+        - name: task-ws
+          workspace: task-ws
+      runAfter:
+        - task1
