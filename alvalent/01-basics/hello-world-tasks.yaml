@@ -2,15 +2,21 @@ apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: task1
-spec:  steps:
+spec:
+  params:
+    - name: input-string
+      type: string
+  steps:
     - name: write-string
-      image: quay.io/libpod/alpine:3.2
+      image: registry.access.redhat.com/ubi9/ubi-minimal@sha256:3685c58885771d2ea14608caeab6a4c3949b973588c29ce91f462b486ee1be25
       env:
-        - name: STRING
-          value: $(parameters.input-string)
+        - name: TEXT
+          value: $(params.input-string)
       script: |
         #!/bin/bash
-        echo $STRING > $(workspaces.custom.path)/input-string
+        echo $TEXT
+        echo $TEXT > $(workspaces.task-ws.path)/input-string
+        echo "written."
   workspaces:
     - name: task-ws
 ---
@@ -19,10 +25,11 @@ kind: Task
 metadata:
   name: task2
 spec:
-  taskSpec:
-    steps:
-      - name: write-string
-        image: quay.io/libpod/alpine:3.2
-        script: cat $(workspaces.custom.path)/input-string
-    workspaces:
-      - name: task-ws
+  steps:
+    - name: write-string
+      image: registry.access.redhat.com/ubi9/ubi-minimal@sha256:3685c58885771d2ea14608caeab6a4c3949b973588c29ce91f462b486ee1be25
+      script: |
+        #!/bin/bash
+        cat $(workspaces.task-ws.path)/input-string
+  workspaces:
+    - name: task-ws
