@@ -1,0 +1,15 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: check-file-content
+spec:
+  workspaces:
+    - name: mr-test-ws
+      readOnly: true
+  steps:
+    - name: check-file
+      image: registry.redhat.io/ubi8-minimal:latest
+      script: |
+        #!/bin/bash -x
+        file_content=$(head -1 -z /workspace/mr-test-ws/mr-test/mr-test-1.txt)
+        if [ "$file_content" == "mr-test-1" ]; then echo "GREAT SUCCESS"; else echo "GREAT FAILURE"; fi
