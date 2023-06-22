@@ -1,0 +1,10 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  generateName: 02-cluster-task-pipeline-run-
+spec:
+  params:
+    - name: input-string
+      value: "Hello World!"
+  pipelineRef:
+    name: 02-clustertasks-pipeline
