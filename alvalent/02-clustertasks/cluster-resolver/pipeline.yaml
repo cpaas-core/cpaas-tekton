@@ -1,0 +1,25 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: 02-clustertasks-pipeline
+spec:
+  params:
+    - name: input-string
+      type: string
+  tasks:
+    - name: write-string
+      params:
+        - name: input-string
+          value: $(params.input-string)
+      taskRef:
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: write-string
+          - name: namespace
+            value: test-pipelines
+      results:
+        - name: echoed-string
+          value: $(tasks.write-string.outputs.result)
