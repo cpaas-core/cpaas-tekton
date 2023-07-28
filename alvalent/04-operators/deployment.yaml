@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cronprint-operator
+  labels:
+    app: cronprint-operator
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: cronprint-operator
+  template:
+    metadata:
+      labels:
+        app: cronprint-operator
+    spec:
+      serviceAccountName: cronprint-operator
+      containers:
+      - name: cronprint-operator
+        image: quay.io/alvalent/cp-operator:latest
+      imagePullPolicy: Always
