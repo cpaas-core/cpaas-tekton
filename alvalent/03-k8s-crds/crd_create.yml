@@ -1,8 +1,9 @@
+# oc apply -f crd_create.yml
 apiVersion: crd.tekton/v1
 kind: CronPrint
 metadata:
   name: cronprint-1
   namespace: tekton-pipelines
 spec:
-  cronSpec: "0 0 * * *"
+  cronSpec: "2 * * * *"
   text: "Hello World!"
